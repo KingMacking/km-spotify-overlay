@@ -6,7 +6,7 @@
 const isProduction = window.location.hostname !== 'localhost' && 
                      window.location.hostname !== '127.0.0.1';
 const API_URL = isProduction 
-  ? 'https://km-spotify-overlay-production.up.railway.app' 
+  ? 'https://km-spotify-overlay.onrender.com' 
   : 'http://127.0.0.1:3000';
 
 // Obtener userId de la URL
