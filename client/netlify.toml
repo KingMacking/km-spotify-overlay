@@ -2,12 +2,6 @@
   publish = "dist"
   command = "pnpm build"
 
-# Redirects para SPA
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 # Headers de seguridad
 [[headers]]
   for = "/*"
