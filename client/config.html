@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/spotify.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configurar Overlay - Spotify</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --spotify-green: #1DB954;
+        --bg-dark: #121212;
+        --bg-card: #181818;
+        --bg-hover: #282828;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+      }
+
+      body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      header h1 svg {
+        width: 36px;
+        height: 36px;
+      }
+
+      header p {
+        color: var(--text-secondary);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 24px;
+      }
+
+      .panel h2 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #333;
+      }
+
+      .option-group {
+        margin-bottom: 24px;
+      }
+
+      .option-group h3 {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+      }
+
+      .option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #282828;
+      }
+
+      .option:last-child {
+        border-bottom: none;
+      }
+
+      .option-label {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .option-label span:first-child {
+        font-weight: 500;
+      }
+
+      .option-label span:last-child {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
+
+      /* Toggle Switch */
+      .toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+      }
+
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #404040;
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      .toggle input:checked + .toggle-slider {
+        background-color: var(--spotify-green);
+      }
+
+      .toggle input:checked + .toggle-slider:before {
+        transform: translateX(20px);
+      }
+
+      /* Select */
+      .select-wrapper {
+        position: relative;
+      }
+
+      select {
+        appearance: none;
+        background: var(--bg-hover);
+        border: 1px solid #404040;
+        color: var(--text-primary);
+        padding: 8px 32px 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        min-width: 140px;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: var(--spotify-green);
+      }
+
+      .select-wrapper::after {
+        content: "▼";
+        font-size: 10px;
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text-secondary);
+      }
+
+      /* Preview */
+      .preview-container {
+        background: #0a0a0a;
+        border-radius: 8px;
+        min-height: 200px;
+        display: flex;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .preview-container.position-top-left { align-items: flex-start; justify-content: flex-start; }
+      .preview-container.position-top-right { align-items: flex-start; justify-content: flex-end; }
+      .preview-container.position-bottom-left { align-items: flex-end; justify-content: flex-start; }
+      .preview-container.position-bottom-right { align-items: flex-end; justify-content: flex-end; }
+      .preview-container.position-center { align-items: center; justify-content: center; }
+
+      .preview-overlay {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(18, 18, 18, 0.92);
+        border-radius: 12px;
+        padding: 12px;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
+      }
+
+      .preview-overlay.size-small { transform: scale(0.8); }
+      .preview-overlay.size-large { transform: scale(1.1); }
+
+      .preview-album {
+        width: 56px;
+        height: 56px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #1DB954, #191414);
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .preview-album img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .preview-indicator {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 10px;
+        padding: 2px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 2px;
+      }
+
+      .preview-indicator span {
+        width: 2px;
+        background: var(--spotify-green);
+        border-radius: 1px;
+        animation: previewBars 0.8s ease-in-out infinite;
+      }
+
+      .preview-indicator span:nth-child(1) { animation-delay: 0s; }
+      .preview-indicator span:nth-child(2) { animation-delay: 0.2s; }
+      .preview-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes previewBars {
+        0%, 100% { height: 3px; }
+        50% { height: 8px; }
+      }
+
+      .preview-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .preview-track {
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .preview-artist {
+        font-size: 11px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .preview-progress {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .preview-progress-bar {
+        height: 100%;
+        width: 65%;
+        background: linear-gradient(90deg, var(--spotify-green), #1ed760);
+        border-radius: 3px;
+      }
+
+      .preview-logo {
+        width: 20px;
+        height: 20px;
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+
+      /* URL Output */
+      .url-section {
+        margin-top: 24px;
+      }
+
+      .url-section h3 {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+      }
+
+      .url-output {
+        display: flex;
+        gap: 8px;
+      }
+
+      .url-output input {
+        flex: 1;
+        background: var(--bg-dark);
+        border: 1px solid #404040;
+        color: var(--text-primary);
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: monospace;
+      }
+
+      .url-output input:focus {
+        outline: none;
+        border-color: var(--spotify-green);
+      }
+
+      .btn {
+        background: var(--spotify-green);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .btn:hover {
+        background: #1ed760;
+        transform: scale(1.02);
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn-secondary {
+        background: var(--bg-hover);
+      }
+
+      .btn-secondary:hover {
+        background: #333;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .copied-toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--spotify-green);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+
+      .copied-toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      /* Hidden classes for preview */
+      .hide-album .preview-album { display: none; }
+      .hide-progress .preview-progress { display: none; }
+      .hide-artist .preview-artist { display: none; }
+      .hide-logo .preview-logo { display: none; }
+      .hide-indicator .preview-indicator { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <svg viewBox="0 0 24 24" fill="#1DB954">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
+          Configurar Overlay
+        </h1>
+        <p>Personaliza tu overlay y copia la URL para OBS</p>
+      </header>
+
+      <div class="layout">
+        <!-- Panel de opciones -->
+        <div class="panel">
+          <h2>⚙️ Opciones</h2>
+
+          <div class="option-group">
+            <h3>Elementos visibles</h3>
+            
+            <div class="option">
+              <div class="option-label">
+                <span>Carátula del álbum</span>
+                <span>Imagen de la portada</span>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="showAlbum" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="option">
+              <div class="option-label">
+                <span>Barra de progreso</span>
+                <span>Muestra el avance de la canción</span>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="showProgress" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="option">
+              <div class="option-label">
+                <span>Nombre del artista</span>
+                <span>Debajo del título</span>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="showArtist" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="option">
+              <div class="option-label">
+                <span>Logo de Spotify</span>
+                <span>Icono a la derecha</span>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="showLogo" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="option">
+              <div class="option-label">
+                <span>Indicador de reproducción</span>
+                <span>Barras animadas</span>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="showIndicator" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <h3>Apariencia</h3>
+
+            <div class="option">
+              <div class="option-label">
+                <span>Posición</span>
+                <span>Ubicación en pantalla</span>
+              </div>
+              <div class="select-wrapper">
+                <select id="position">
+                  <option value="bottom-left">Inferior izquierda</option>
+                  <option value="bottom-right">Inferior derecha</option>
+                  <option value="top-left">Superior izquierda</option>
+                  <option value="top-right">Superior derecha</option>
+                  <option value="center">Centro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="option">
+              <div class="option-label">
+                <span>Tamaño</span>
+                <span>Escala del overlay</span>
+              </div>
+              <div class="select-wrapper">
+                <select id="size">
+                  <option value="small">Pequeño</option>
+                  <option value="medium" selected>Mediano</option>
+                  <option value="large">Grande</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview y URL -->
+        <div class="panel">
+          <h2>👁️ Vista previa</h2>
+          
+          <div class="preview-container position-bottom-left" id="previewContainer">
+            <div class="preview-overlay" id="previewOverlay">
+              <div class="preview-album">
+                <img src="https://i.scdn.co/image/ab67616d0000b273c5716278abba6a103ad13aa7" alt="Album">
+                <div class="preview-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+              <div class="preview-info">
+                <div class="preview-track">Blinding Lights</div>
+                <div class="preview-artist">The Weeknd</div>
+                <div class="preview-progress">
+                  <div class="preview-progress-bar"></div>
+                </div>
+              </div>
+              <svg class="preview-logo" viewBox="0 0 24 24" fill="#1DB954">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="url-section">
+            <h3>URL para OBS</h3>
+            <div class="url-output">
+              <input type="text" id="urlOutput" readonly>
+              <button class="btn" id="copyBtn">Copiar</button>
+            </div>
+            <div class="actions">
+              <button class="btn btn-secondary" id="openBtn">Abrir overlay</button>
+              <button class="btn btn-secondary" id="resetBtn">Resetear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="copied-toast" id="toast">✓ URL copiada al portapapeles</div>
+
+    <script>
+      const BASE_URL = window.location.origin;
+      
+      // Elementos
+      const options = {
+        showAlbum: document.getElementById('showAlbum'),
+        showProgress: document.getElementById('showProgress'),
+        showArtist: document.getElementById('showArtist'),
+        showLogo: document.getElementById('showLogo'),
+        showIndicator: document.getElementById('showIndicator'),
+        position: document.getElementById('position'),
+        size: document.getElementById('size'),
+      };
+
+      const previewContainer = document.getElementById('previewContainer');
+      const previewOverlay = document.getElementById('previewOverlay');
+      const urlOutput = document.getElementById('urlOutput');
+      const toast = document.getElementById('toast');
+
+      // Generar URL
+      function generateURL() {
+        const params = new URLSearchParams();
+        
+        if (!options.showAlbum.checked) params.set('album', '0');
+        if (!options.showProgress.checked) params.set('progress', '0');
+        if (!options.showArtist.checked) params.set('artist', '0');
+        if (!options.showLogo.checked) params.set('logo', '0');
+        if (!options.showIndicator.checked) params.set('indicator', '0');
+        if (options.position.value !== 'bottom-left') params.set('position', options.position.value);
+        if (options.size.value !== 'medium') params.set('size', options.size.value);
+
+        const queryString = params.toString();
+        return `${BASE_URL}/${queryString ? '?' + queryString : ''}`;
+      }
+
+      // Actualizar preview
+      function updatePreview() {
+        // Clases de visibilidad
+        previewOverlay.classList.toggle('hide-album', !options.showAlbum.checked);
+        previewOverlay.classList.toggle('hide-progress', !options.showProgress.checked);
+        previewOverlay.classList.toggle('hide-artist', !options.showArtist.checked);
+        previewOverlay.classList.toggle('hide-logo', !options.showLogo.checked);
+        previewOverlay.classList.toggle('hide-indicator', !options.showIndicator.checked);
+
+        // Posición
+        previewContainer.className = `preview-container position-${options.position.value}`;
+
+        // Tamaño
+        previewOverlay.classList.remove('size-small', 'size-large');
+        if (options.size.value !== 'medium') {
+          previewOverlay.classList.add(`size-${options.size.value}`);
+        }
+
+        // URL
+        urlOutput.value = generateURL();
+      }
+
+      // Event listeners
+      Object.values(options).forEach(el => {
+        el.addEventListener('change', updatePreview);
+      });
+
+      // Copiar URL
+      document.getElementById('copyBtn').addEventListener('click', async () => {
+        await navigator.clipboard.writeText(urlOutput.value);
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+
+      // Abrir overlay
+      document.getElementById('openBtn').addEventListener('click', () => {
+        window.open(urlOutput.value, '_blank');
+      });
+
+      // Resetear
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        options.showAlbum.checked = true;
+        options.showProgress.checked = true;
+        options.showArtist.checked = true;
+        options.showLogo.checked = true;
+        options.showIndicator.checked = true;
+        options.position.value = 'bottom-left';
+        options.size.value = 'medium';
+        updatePreview();
+      });
+
+      // Inicializar
+      updatePreview();
+    </script>
+  </body>
+</html>

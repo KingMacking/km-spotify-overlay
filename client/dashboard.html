@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/spotify.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Spotify Overlay</title>
+    <link rel="stylesheet" href="/src/dashboard.css">
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="logo">
+        <svg viewBox="0 0 24 24" fill="#1DB954">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+        Spotify Overlay
+      </a>
+      <div class="user-info" id="userInfo">
+        <div class="user-avatar" id="userAvatar"></div>
+        <span class="user-name" id="userName"></span>
+        <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+      </div>
+    </nav>
+
+    <!-- Loading -->
+    <div class="loading" id="loadingState">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+
+    <!-- Dashboard content -->
+    <div class="container hidden" id="dashboardContent">
+      <div class="welcome">
+        <h1>¡Hola, <span id="welcomeName"></span>! 👋</h1>
+        <p>Configura tu overlay y copia la URL para usarla en OBS</p>
+      </div>
+
+      <div class="grid">
+        <!-- Now Playing -->
+        <div class="card">
+          <h2>🎵 Reproduciendo ahora</h2>
+          <div class="now-playing-preview" id="nowPlayingPreview">
+            <p class="not-playing-msg">Cargando...</p>
+          </div>
+        </div>
+
+        <!-- Config -->
+        <div class="card">
+          <h2>⚙️ Configuración</h2>
+
+          <div class="option-group">
+            <h3>Texto personalizado</h3>
+            <div class="option">
+              <input type="text" id="customLabel" placeholder="Ej: Escuchando ahora:" class="text-input">
+            </div>
+          </div>
+
+          <div class="option-group">
+            <h3>Elementos</h3>
+            <div class="option">
+              <div class="option-label"><span>Carátula</span></div>
+              <label class="toggle">
+                <input type="checkbox" id="showAlbum" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="option">
+              <div class="option-label"><span>Barra de progreso</span></div>
+              <label class="toggle">
+                <input type="checkbox" id="showProgress" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="option">
+              <div class="option-label"><span>Artista</span></div>
+              <label class="toggle">
+                <input type="checkbox" id="showArtist" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="option">
+              <div class="option-label"><span>Logo Spotify</span></div>
+              <label class="toggle">
+                <input type="checkbox" id="showLogo" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="option">
+              <div class="option-label"><span>Indicador</span></div>
+              <label class="toggle">
+                <input type="checkbox" id="showIndicator" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <h3>Apariencia</h3>
+            <div class="option">
+              <div class="option-label"><span>Posición</span></div>
+              <select id="position">
+                <option value="bottom-left">↙ Inferior izq</option>
+                <option value="bottom-right">↘ Inferior der</option>
+                <option value="top-left">↖ Superior izq</option>
+                <option value="top-right">↗ Superior der</option>
+                <option value="center">◉ Centro</option>
+              </select>
+            </div>
+            <div class="option">
+              <div class="option-label"><span>Tamaño</span></div>
+              <select id="size">
+                <option value="small">Pequeño</option>
+                <option value="medium" selected>Mediano</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="url-section">
+            <h3>Tu URL del Overlay</h3>
+            <div class="url-box">
+              <input type="text" id="overlayUrl" readonly>
+              <button class="btn" id="copyBtn">Copiar</button>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="previewBtn">Vista previa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card instructions" style="margin-top: 24px;">
+        <h3>📺 Cómo agregar a OBS</h3>
+        <ol>
+          <li>Copia la URL de arriba</li>
+          <li>En OBS, haz clic en <code>+</code> en Fuentes → <code>Navegador</code></li>
+          <li>Pega la URL en el campo "URL"</li>
+          <li>Ajusta el ancho a <code>400</code> y alto a <code>150</code> (aproximado)</li>
+          <li>¡Listo! Posiciona el overlay donde quieras</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">✓ URL copiada</div>
+
+    <script src="/src/dashboard.js"></script>
+  </body>
+</html>

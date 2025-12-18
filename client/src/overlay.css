@@ -1,0 +1,163 @@
+/* ============================================
+   OVERLAY STYLES
+   ============================================ */
+
+/* Reset for overlay page */
+body {
+  background: transparent !important;
+  min-height: 100vh;
+  display: flex;
+  padding: 20px;
+}
+
+/* App container with fixed width */
+#app {
+  position: fixed;
+  width: 380px;
+}
+
+/* Overlay with fixed width */
+.overlay {
+  width: 380px;
+}
+
+/* ============================================
+   POSITION CLASSES
+   ============================================ */
+
+#app.position-bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+#app.position-bottom-right {
+  bottom: 20px;
+  right: 20px;
+  left: auto;
+}
+
+#app.position-top-left {
+  top: 20px;
+  left: 20px;
+}
+
+#app.position-top-right {
+  top: 20px;
+  right: 20px;
+  left: auto;
+}
+
+#app.position-center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ============================================
+   SIZE CLASSES
+   ============================================ */
+
+.overlay.size-small {
+  padding: 10px;
+  gap: 10px;
+  width: 320px;
+}
+
+#app:has(.overlay.size-small) {
+  width: 320px;
+}
+
+.overlay.size-small .album-art {
+  width: 48px;
+  height: 48px;
+}
+
+.overlay.size-small .track-name {
+  font-size: 12px;
+}
+
+.overlay.size-small .artist-name {
+  font-size: 10px;
+}
+
+.overlay.size-small .spotify-logo {
+  width: 18px;
+  height: 18px;
+}
+
+.overlay.size-large {
+  padding: 18px;
+  gap: 16px;
+  width: 440px;
+}
+
+#app:has(.overlay.size-large) {
+  width: 440px;
+}
+
+.overlay.size-large .album-art {
+  width: 80px;
+  height: 80px;
+}
+
+.overlay.size-large .track-name {
+  font-size: 18px;
+}
+
+.overlay.size-large .artist-name {
+  font-size: 14px;
+}
+
+.overlay.size-large .spotify-logo {
+  width: 28px;
+  height: 28px;
+}
+
+/* ============================================
+   HIDE CLASSES
+   ============================================ */
+
+.overlay.hide-album .album-art { display: none; }
+.overlay.hide-progress .progress-container { display: none; }
+.overlay.hide-artist .artist-name { display: none; }
+.overlay.hide-logo .spotify-logo { display: none; }
+.overlay.hide-indicator .playing-indicator { display: none; }
+
+/* ============================================
+   CUSTOM LABEL
+   ============================================ */
+
+.custom-label {
+  font-size: 10px;
+  color: #b3b3b3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.custom-label:empty {
+  display: none;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+
+.error-state {
+  background: rgba(18, 18, 18, 0.92);
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: #b3b3b3;
+  font-size: 13px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 380px;
+}
+
+.error-state.hidden {
+  display: none;
+}
+
+.error-state a {
+  color: #1DB954;
+}
