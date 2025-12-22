@@ -434,6 +434,62 @@ nav {
   transform: translateX(18px);
 }
 
+.toggle input:disabled + .toggle-slider {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   SIMPLIFIED OPTION
+   ============================================ */
+
+.simplified-option {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), transparent);
+  border-radius: 8px;
+  padding: 12px !important;
+  margin: -4px;
+}
+
+.option-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Grupo deshabilitado */
+.disabled-group {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Preview modo simplificado */
+.preview-overlay.simplified {
+  width: auto;
+  max-width: 320px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+}
+
+.preview-overlay.simplified .preview-album,
+.preview-overlay.simplified .preview-info,
+.preview-overlay.simplified .preview-logo {
+  display: none;
+}
+
+.preview-overlay.simplified::after {
+  content: attr(data-simplified-text);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
 /* ============================================
    FORM ELEMENTS
    ============================================ */

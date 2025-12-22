@@ -25,6 +25,7 @@ if (!userId) {
 
 // Opciones
 const options = {
+  simplified: document.getElementById('simplified'),
   customLabel: document.getElementById('customLabel'),
   showAlbum: document.getElementById('showAlbum'),
   showProgress: document.getElementById('showProgress'),
@@ -35,6 +36,8 @@ const options = {
   size: document.getElementById('size'),
 };
 
+const elementsGroup = document.getElementById('elementsGroup');
+
 // ============================================
 // URL GENERATION
 // ============================================
@@ -43,17 +46,31 @@ function generateOverlayUrl() {
   const base = `${window.location.origin}/overlay.html?userId=${userId}`;
   const params = new URLSearchParams();
   
-  if (options.customLabel.value.trim()) params.set('label', options.customLabel.value.trim());
-  if (!options.showAlbum.checked) params.set('album', '0');
-  if (!options.showProgress.checked) params.set('progress', '0');
-  if (!options.showArtist.checked) params.set('artist', '0');
-  if (!options.showLogo.checked) params.set('logo', '0');
-  if (!options.showIndicator.checked) params.set('indicator', '0');
-  if (options.position.value !== 'bottom-left') params.set('position', options.position.value);
-  if (options.size.value !== 'medium') params.set('size', options.size.value);
+  if (options.simplified.checked) {
+    params.set('simplified', '1');
+  } else {
+    if (options.customLabel.value.trim()) params.set('label', options.customLabel.value.trim());
+    if (!options.showAlbum.checked) params.set('album', '0');
+    if (!options.showProgress.checked) params.set('progress', '0');
+    if (!options.showArtist.checked) params.set('artist', '0');
+    if (!options.showLogo.checked) params.set('logo', '0');
+    if (!options.showIndicator.checked) params.set('indicator', '0');
+    if (options.position.value !== 'bottom-left') params.set('position', options.position.value);
+    if (options.size.value !== 'medium') params.set('size', options.size.value);
+  }
 
   const queryString = params.toString();
   return queryString ? `${base}&${queryString}` : base;
+}
+
+// Manejar toggle de modo simplificado
+function handleSimplifiedToggle() {
+  const isSimplified = options.simplified.checked;
+  elementsGroup.classList.toggle('disabled-group', isSimplified);
+  
+  // Deshabilitar/habilitar controles
+  const inputs = elementsGroup.querySelectorAll('input, select');
+  inputs.forEach(input => input.disabled = isSimplified);
 }
 
 function updateUrl() {
@@ -74,23 +91,34 @@ function updatePreview() {
   
   // Si hay un overlay visible, actualizar sus clases
   if (overlay) {
-    // Reset size classes
-    overlay.classList.remove('size-small', 'size-medium', 'size-large');
-    overlay.classList.add(`size-${options.size.value}`);
+    // Modo simplificado
+    overlay.classList.toggle('simplified', options.simplified.checked);
     
-    // Toggle visibility classes
-    overlay.classList.toggle('hide-album', !options.showAlbum.checked);
-    overlay.classList.toggle('hide-progress', !options.showProgress.checked);
-    overlay.classList.toggle('hide-artist', !options.showArtist.checked);
-    overlay.classList.toggle('hide-logo', !options.showLogo.checked);
-    overlay.classList.toggle('hide-indicator', !options.showIndicator.checked);
+    if (options.simplified.checked) {
+      overlay.classList.add('hide-album', 'hide-progress', 'hide-logo', 'hide-indicator');
+      overlay.classList.remove('hide-artist');
+    } else {
+      // Reset size classes
+      overlay.classList.remove('size-small', 'size-medium', 'size-large');
+      overlay.classList.add(`size-${options.size.value}`);
+      
+      // Toggle visibility classes
+      overlay.classList.toggle('hide-album', !options.showAlbum.checked);
+      overlay.classList.toggle('hide-progress', !options.showProgress.checked);
+      overlay.classList.toggle('hide-artist', !options.showArtist.checked);
+      overlay.classList.toggle('hide-logo', !options.showLogo.checked);
+      overlay.classList.toggle('hide-indicator', !options.showIndicator.checked);
+    }
     
     // Custom label
     const labelEl = overlay.querySelector('.preview-label');
     if (labelEl) {
-      labelEl.textContent = options.customLabel.value.trim();
+      labelEl.textContent = options.simplified.checked ? '' : options.customLabel.value.trim();
     }
   }
+  
+  // Actualizar estado del grupo de elementos
+  handleSimplifiedToggle();
 }
 
 // ============================================
@@ -112,9 +140,10 @@ async function loadNowPlaying() {
 
     const track = data.track;
     const progress = (track.progress / track.duration) * 100;
+    const simplifiedText = `${track.name} • ${track.artists.join(', ')}`;
     
     container.innerHTML = `
-      <div class="preview-overlay">
+      <div class="preview-overlay" data-simplified-text="${simplifiedText}">
         <div class="preview-album">
           <img src="${track.albumArt}" alt="Album">
           ${data.isPlaying ? `

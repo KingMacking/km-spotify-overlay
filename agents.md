@@ -90,6 +90,7 @@ DELETE /api/user/:userId        - Eliminar usuario (logout)
 
 ```
 userId      - (requerido) ID del usuario
+simplified  - 1 para modo simplificado (solo canción • artista)
 album       - 0 para ocultar carátula
 progress    - 0 para ocultar barra
 artist      - 0 para ocultar artista
@@ -103,6 +104,12 @@ size        - small, medium, large
 ```
 /overlay.html?userId=abc123&progress=0&position=top-right&size=small
 ```
+
+**Modo Simplificado:**
+```
+/overlay.html?userId=abc123&simplified=1
+```
+El modo simplificado muestra solo "Canción • Artista" en una línea con efecto marquee si supera 280px.
 
 ## Scripts
 

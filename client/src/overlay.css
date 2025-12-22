@@ -161,3 +161,65 @@ body {
 .error-state a {
   color: #1DB954;
 }
+
+/* ============================================
+   SIMPLIFIED MODE
+   ============================================ */
+
+.overlay.simplified {
+  width: auto;
+  max-width: 320px;
+  padding: 0;
+  gap: 0;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.overlay.simplified .album-art,
+.overlay.simplified .track-info,
+.overlay.simplified .spotify-logo,
+.overlay.simplified .progress-container,
+.overlay.simplified .playing-indicator {
+  display: none;
+}
+
+.overlay.simplified .simplified-content {
+  display: block;
+  overflow: hidden;
+  max-width: 280px;
+  white-space: nowrap;
+}
+
+.simplified-content {
+  display: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Marquee animation */
+.simplified-content.marquee {
+  display: flex;
+  gap: 50px;
+  animation: marquee 12s linear infinite;
+}
+
+.simplified-content.marquee span {
+  flex-shrink: 0;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 25px));
+  }
+}
+
+#app:has(.overlay.simplified) {
+  width: auto;
+}
